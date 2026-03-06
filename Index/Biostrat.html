@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Biologie Terminal</title>
+
+<style>
+
+body{
+margin:0;
+background:#020617;
+color:#00f7ff;
+font-family:monospace;
+}
+
+/* MATRIX BOOTSCREEN */
+
+#matrixBoot{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+z-index:9999;
+}
+
+#bootText{
+position:absolute;
+bottom:40px;
+left:50%;
+transform:translateX(-50%);
+color:#00ff00;
+font-size:18px;
+}
+
+/* MAIN PAGE */
+
+#mainPage{
+display:none;
+}
+
+/* PARTICLES */
+
+#particles{
+position:fixed;
+top:0;
+left:0;
+z-index:-1;
+}
+
+/* HEADER */
+
+header{
+text-align:center;
+padding-top:60px;
+}
+
+h1{
+font-size:46px;
+letter-spacing:6px;
+}
+
+#typing{
+color:#00ffaa;
+margin-top:10px;
+}
+
+/* BRAIN */
+
+#brain{
+display:block;
+margin:80px auto;
+}
+
+/* STATUS */
+
+.status{
+text-align:center;
+margin:20px;
+}
+
+/* SCROLL AREA */
+
+.section{
+padding:140px 20px;
+}
+
+/* MODULES */
+
+.container{
+display:flex;
+justify-content:center;
+gap:60px;
+flex-wrap:wrap;
+}
+
+.module{
+border:2px solid #00f7ff;
+padding:30px;
+width:260px;
+border-radius:10px;
+text-align:center;
+background:rgba(0,0,0,0.4);
+transition:0.3s;
+}
+
+.module:hover{
+transform:scale(1.05);
+box-shadow:0 0 25px #00f7ff;
+}
+
+.icon{
+font-size:60px;
+animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+0%{transform:scale(1)}
+50%{transform:scale(1.2)}
+100%{transform:scale(1)}
+}
+
+button{
+margin-top:20px;
+padding:10px 20px;
+background:#00f7ff;
+border:none;
+cursor:pointer;
+font-weight:bold;
+}
+
+button:hover{
+background:#00ffaa;
+}
+
+/* LOADER */
+
+#loader{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+color:#00f7ff;
+display:none;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+
+#diagnostics{
+margin-top:20px;
+line-height:26px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- MATRIX BOOTSCREEN -->
+
+<canvas id="matrixBoot"></canvas>
+<div id="bootText">SYSTEM BOOTING...</div>
+
+<!-- MAIN PAGE -->
+
+<div id="mainPage">
+
+<canvas id="particles"></canvas>
+
+<header>
+
+<h1>BIOLOGIE TERMINAL</h1>
+
+<div id="typing"></div>
+
+</header>
+
+<canvas id="brain" width="320" height="240"></canvas>
+
+<div class="status">
+SYSTEM STATUS: ONLINE<br>
+SCROLL DOWN TO SELECT MODULE
+</div>
+
+<section class="section">
+
+<div class="container">
+
+<div class="module">
+
+<div class="icon">🧠</div>
+
+<h2>MODUL 01</h2>
+<p>Nervensystem</p>
+
+<button onclick="openPage('nerven.html')">
+START
+</button>
+
+</div>
+
+<div class="module">
+
+<div class="icon">⚗️</div>
+
+<h2>MODUL 02</h2>
+<p>Hormonsystem</p>
+
+<button onclick="openPage('Hormonsystem.html')">
+START
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+<div id="loader">
+
+<div>VERBINDE MIT SYSTEM...</div>
+
+<div id="diagnostics"></div>
+
+</div>
+
+<script>
+
+/* MATRIX BOOTSCREEN */
+
+const matrixCanvas=document.getElementById("matrixBoot");
+const mctx=matrixCanvas.getContext("2d");
+
+matrixCanvas.width=window.innerWidth;
+matrixCanvas.height=window.innerHeight;
+
+const letters="01BIOLOGIE";
+const fontSize=16;
+const columns=matrixCanvas.width/fontSize;
+
+const drops=[];
+
+for(let x=0;x<columns;x++){
+drops[x]=1;
+}
+
+function drawMatrix(){
+
+mctx.fillStyle="rgba(0,0,0,0.05)";
+mctx.fillRect(0,0,matrixCanvas.width,matrixCanvas.height);
+
+mctx.fillStyle="#0f0";
+mctx.font=fontSize+"px monospace";
+
+for(let i=0;i<drops.length;i++){
+
+const text=letters.charAt(Math.floor(Math.random()*letters.length));
+
+mctx.fillText(text,i*fontSize,drops[i]*fontSize);
+
+if(drops[i]*fontSize>matrixCanvas.height && Math.random()>0.975){
+drops[i]=0;
+}
+
+drops[i]++;
+
+}
+
+}
+
+const matrixInterval=setInterval(drawMatrix,33);
+
+/* BOOT SEQUENCE */
+
+const bootMessages=[
+"Initialisiere Biologie-System...",
+"Lade neuronale Datenbanken...",
+"Synchronisiere Hormondrüsen...",
+"Prüfe Synapsenverbindungen...",
+"Aktiviere Bio-Module...",
+"Systemstart abgeschlossen."
+];
+
+let bootIndex=0;
+
+const bootText=document.getElementById("bootText");
+
+let bootLoop=setInterval(()=>{
+
+bootText.innerText=bootMessages[bootIndex];
+
+bootIndex++;
+
+if(bootIndex>=bootMessages.length){
+
+clearInterval(bootLoop);
+
+setTimeout(()=>{
+
+clearInterval(matrixInterval);
+
+document.getElementById("matrixBoot").style.opacity="0";
+
+setTimeout(()=>{
+
+document.getElementById("matrixBoot").remove();
+
+document.getElementById("mainPage").style.display="block";
+
+startMainAnimations();
+
+},1000);
+
+},1000);
+
+}
+
+},1200);
+
+/* MAIN PAGE ANIMATIONEN */
+
+function startMainAnimations(){
+
+typing();
+
+particles();
+
+brainAnimation();
+
+}
+
+/* TYPING TEXT */
+
+const text="LOGIN SUCCESSFUL | BIOLOGIE TERMINAL AKTIV";
+let i=0;
+
+function typing(){
+
+if(i<text.length){
+
+document.getElementById("typing").innerHTML+=text.charAt(i);
+
+i++;
+
+setTimeout(typing,40);
+
+}
+
+}
+
+/* PARTICLES */
+
+function particles(){
+
+const canvas=document.getElementById("particles");
+const ctx=canvas.getContext("2d");
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let parts=[];
+
+for(let i=0;i<120;i++){
+
+parts.push({
+x:Math.random()*canvas.width,
+y:Math.random()*canvas.height,
+r:Math.random()*2
+});
+
+}
+
+function draw(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+ctx.fillStyle="#00f7ff";
+
+parts.forEach(p=>{
+
+ctx.beginPath();
+ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+ctx.fill();
+
+p.y+=0.4;
+
+if(p.y>canvas.height)p.y=0;
+
+});
+
+requestAnimationFrame(draw);
+
+}
+
+draw();
+
+}
+
+/* BRAIN ANIMATION */
+
+function brainAnimation(){
+
+const brain=document.getElementById("brain");
+const bctx=brain.getContext("2d");
+
+let angle=0;
+
+function draw(){
+
+bctx.clearRect(0,0,brain.width,brain.height);
+
+bctx.strokeStyle="#00f7ff";
+
+for(let i=0;i<20;i++){
+
+let x=160+Math.sin(i+angle)*90;
+let y=120+Math.cos(i+angle)*50;
+
+bctx.beginPath();
+bctx.arc(x,y,20,0,Math.PI*2);
+bctx.stroke();
+
+}
+
+angle+=0.02;
+
+requestAnimationFrame(draw);
+
+}
+
+draw();
+
+/* LIGHTNING */
+
+setInterval(()=>{
+
+const x=Math.random()*brain.width;
+const y=Math.random()*brain.height;
+
+bctx.strokeStyle="#ffffff";
+
+bctx.beginPath();
+
+bctx.moveTo(x,y);
+
+for(let i=0;i<5;i++){
+
+bctx.lineTo(
+x+(Math.random()*40-20),
+y+(Math.random()*40-20)
+);
+
+}
+
+bctx.stroke();
+
+},700);
+
+}
+
+/* PAGE LOADER */
+
+const lines=[
+"Initialisiere Modul...",
+"Lade Daten...",
+"Synchronisiere System...",
+"Verbinde Neuro-Netz...",
+"Start abgeschlossen."
+];
+
+function openPage(page){
+
+document.getElementById("loader").style.display="flex";
+
+let index=0;
+
+let diag=setInterval(()=>{
+
+document.getElementById("diagnostics").innerHTML+=lines[index]+"<br>";
+
+index++;
+
+if(index>=lines.length){
+
+clearInterval(diag);
+
+setTimeout(()=>{
+
+window.location.href=page;
+
+},800);
+
+}
+
+},600);
+
+}
+
+</script>
+
+</body>
+</html>
